@@ -1,0 +1,73 @@
+import java.util.*;
+import java.io.*;
+
+public class RSA {
+
+    // Function to compute (x^y) % n
+    static int mult(int x, int y, int n) {
+        int k = 1;
+        for (int j = 1; j <= y; j++) {
+            k = (k * x) % n;
+        }
+        return k;
+    }
+
+    public static void main(String[] args) throws Exception {
+        Scanner s = new Scanner(System.in);
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+
+        String msg1;
+        int[] pt = new int[100]; // Plain text array
+        int[] ct = new int[100]; // Cipher text array
+
+        int p, q, n, Z, e, d = 0;
+
+        System.out.println("Enter prime numbers p and q:");
+        p = s.nextInt();
+        q = s.nextInt();
+
+        n = p * q;            // n = modulus
+        Z = (p - 1) * (q - 1); // Euler’s Totient Function
+
+        System.out.println("\nEnter e (should be co-prime with " + Z + "):");
+        e = s.nextInt();
+
+        System.out.print("Enter the message to encrypt: ");
+        msg1 = br.readLine();
+        char[] msg = msg1.toCharArray();
+
+        // Convert characters to integer values (ASCII)
+        for (int i = 0; i < msg.length; i++) {
+            pt[i] = (int) msg[i];
+        }
+
+        // Calculate private key d such that (e * d) mod Z = 1
+        for (int i = 1; i < Z; i++) {
+            if ((e * i) % Z == 1) {
+                d = i;
+                break;
+            }
+        }
+
+        System.out.println("\n--- RSA Key Info ---");
+        System.out.println("p = " + p + "\tq = " + q + "\tn = " + n + "\tZ = " + Z);
+        System.out.println("Public key (e, n) = (" + e + ", " + n + ")");
+        System.out.println("Private key (d, n) = (" + d + ", " + n + ")");
+
+        // Encryption: ct = pt^e mod n
+        System.out.println("\nEncrypted (Cipher) Text:");
+        for (int i = 0; i < msg.length; i++) {
+            ct[i] = mult(pt[i], e, n);
+            System.out.print(ct[i] + "\t");
+        }
+
+        // Decryption: pt = ct^d mod n
+        System.out.println("\n\nDecrypted (Plain) Text:");
+        for (int i = 0; i < msg.length; i++) {
+            pt[i] = mult(ct[i], d, n);
+            System.out.print((char) pt[i]);
+        }
+
+        s.close();
+    }
+}
