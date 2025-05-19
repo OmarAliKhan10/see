@@ -1,0 +1,48 @@
+import javax.crypto.Cipher;
+import javax.crypto.KeyGenerator;
+import javax.crypto.SecretKey;
+import java.util.Base64;
+import java.nio.charset.StandardCharsets;
+
+public class Main {
+
+    Cipher ecipher;
+    Cipher dcipher;
+
+    // Constructor: Sets up encryption and decryption ciphers using DES and the given key
+    Main(SecretKey key) throws Exception {
+        ecipher = Cipher.getInstance("DES"); // Get DES cipher for encryption
+        dcipher = Cipher.getInstance("DES"); // Get DES cipher for decryption
+        ecipher.init(Cipher.ENCRYPT_MODE, key); // Initialize for encryption
+        dcipher.init(Cipher.DECRYPT_MODE, key); // Initialize for decryption
+    }
+
+    // Encrypts a plain text string and returns the encrypted base64 string
+    public String encrypt(String str) throws Exception {
+        byte[] utf8 = str.getBytes(StandardCharsets.UTF_8);  // Convert string to bytes
+        byte[] enc = ecipher.doFinal(utf8);                  // Encrypt the bytes
+        return Base64.getEncoder().encodeToString(enc);      // Convert encrypted bytes to Base64 string
+    }
+
+    // Decrypts a base64 string back into the original plain text
+    public String decrypt(String str) throws Exception {
+        byte[] dec = Base64.getDecoder().decode(str);        // Decode the base64 string to bytes
+        byte[] utf8 = dcipher.doFinal(dec);                  // Decrypt the bytes
+        return new String(utf8, StandardCharsets.UTF_8);     // Convert bytes back to string
+    }
+
+    public static void main(String[] args) throws Exception {
+        final String secretText = "www.reva.edu.in";                             // Original secret text
+        System.out.println("SecretText: " + secretText);
+
+        SecretKey key = KeyGenerator.getInstance("DES").generateKey();           // Generate random DES key
+
+        Main encrypter = new Main(key);                                          // Create object with the key
+
+        String encrypted = encrypter.encrypt(secretText);                        // Encrypt the message
+        System.out.println("Encrypted Value: " + encrypted);
+
+        String decrypted = encrypter.decrypt(encrypted);                        // Decrypt the message
+        System.out.println("Decrypted: " + decrypted);
+    }
+}
