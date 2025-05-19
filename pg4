@@ -1,0 +1,42 @@
+#include <stdio.h>
+#include <string.h>
+
+int main() {
+    char pt[100], ct[100], dt[100];
+    int key, len, i;
+
+    printf("Enter message to be encrypted (lowercase only): ");
+    scanf("%s", pt);  // Note: scanf reads only one word. Use fgets() for sentences.
+
+    len = strlen(pt);
+
+    printf("\nEnter Key (1-26): ");
+    scanf("%d", &key);
+
+    if (key < 1 || key > 26) {
+        printf("\nInvalid key. Please enter a key between 1 and 26.\n");
+        return 1; // Stop the program
+    }
+
+    // Encryption
+    for (i = 0; i < len; i++) {
+        ct[i] = pt[i] + key;
+        if (ct[i] > 'z')
+            ct[i] = ct[i] - 26;
+    }
+    ct[i] = '\0';
+
+    printf("\nEncrypted message is: %s", ct);
+
+    // Decryption
+    for (i = 0; i < len; i++) {
+        dt[i] = ct[i] - key;
+        if (dt[i] < 'a')
+            dt[i] = dt[i] + 26;
+    }
+    dt[i] = '\0';
+
+    printf("\nDecrypted message is: %s\n", dt);
+
+    return 0;
+}
